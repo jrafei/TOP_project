@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 import pandas as pd
 import point
 
@@ -9,7 +10,8 @@ import point
         
         Returns:
         dict: Un dictionnaire contenant les clés 'n', 'm', 'tmax' avec leurs valeurs respectives,
-        et une liste des clients de type 'List[Points]'.
+        et un dataFrame 'points' contenant les coordonnées et les profits des clients avec les coordonnées de départ
+        en tete de dataFrame et les coordonnées d'arrivé en fin de la dataFrame 
 """
 def read_file(chemin_du_fichier):
     # Initialiser un dictionnaire pour contenir les variables
@@ -25,24 +27,66 @@ def read_file(chemin_du_fichier):
     # Lire le reste du fichier dans un DataFrame
     df = pd.read_csv(chemin_du_fichier, skiprows=3, delim_whitespace=True, names=['x', 'y', 'profit'])
 
-    # Créer un objet Point pour le départ avec la première ligne de données
-    depart_data = df.iloc[0]
-    data_structure['depart'] = point.Point(depart_data['x'], depart_data['y'], depart_data['profit'])
+    data_structure['points'] = df
 
-    # Créer un objet Point pour l'arrivée avec la dernière ligne de données
-    arrivee_data = df.iloc[-1]
-    data_structure['arrivee'] = point.Point(arrivee_data['x'], arrivee_data['y'], arrivee_data['profit'])
 
-    # Supprimer les lignes 'depart' et 'arrivee' du dataframe
-    df = df.iloc[1:-1].reset_index(drop=True)
-    
-    # Ajouter la liste de clients au dictionnaire
-    data_structure['clients'] =dataframe_to_points_list(df)
-    
-    # Renvoyer la structure de données
     return data_structure
 
+
 """
+  Affichage des tournées
+   Parameters:
+        liste_tournee (list[Tournee])  
+"""
+def print_plot(liste_tournees) : 
+    
+    # Pour chaque tournée, tracer la trajectoire
+    for tournee in liste_tournees:
+        x = tournee.points_df['x']
+        y = tournee.points_df['y']
+
+        # Tracer la trajectoire de la tournée
+        plt.plot(x, y, marker='o')  # Points intermédiaires
+
+    # Marquer le point de départ en rouge avec un marqueur spécifique
+    plt.scatter(liste_tournees[0].points_df['x'].iloc[0], liste_tournees[0].points_df['y'].iloc[0], color='red', marker='s', edgecolor='black', label='Départ', s=100)
+
+    # Marquer le point d'arrivée en vert avec un marqueur spécifique
+    plt.scatter(liste_tournees[0].points_df['x'].iloc[-1], liste_tournees[0].points_df['y'].iloc[-1], color='green', marker='s', edgecolor='black', label='Arrivée', s=100)
+
+    # Ajouter des titres et des étiquettes
+    plt.title("Affichage des Tournées")
+    plt.xlabel("Coordonnée X")
+    plt.ylabel("Coordonnée Y")
+    plt.legend()
+
+    # Afficher le graphique
+    plt.show()
+
+
+
+"""
+    Calcule la distance euclidienne entre deux points représentés par deux DataFrames.
+
+    Parameters:
+    df1 (pandas.DataFrame): DataFrame représentant le premier point.
+    df2 (pandas.DataFrame): DataFrame représentant le second point.
+
+    Returns:
+    float: La distance euclidienne entre les deux points.
+"""
+def distance(df1, df2):
+    # Extraction des coordonnées x et y
+    x1, y1 = df1['x'].iloc[0], df1['y'].iloc[0]
+    x2, y2 = df2['x'].iloc[0], df2['y'].iloc[0]
+
+    # Calcul de la distance euclidienne
+    distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+    return distance
+
+
+"""
+    [NON UTILISEE]
     Convertit un DataFrame en une liste d'objets Point.
 
     Parameters:
@@ -59,6 +103,5 @@ def dataframe_to_points_list(df):
         points_list.append(pt)
 
     return points_list
-
 
 

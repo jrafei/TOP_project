@@ -1,5 +1,5 @@
 class Point:
-    """
+    """ [NON UTILISEE]
     Représente un point dans un espace bidimensionnel avec un profit associé.
 
     Attributes:

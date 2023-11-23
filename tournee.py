@@ -1,25 +1,19 @@
-from point import Point
-
 class Tournee:
     """
-    Représente une tournée avec un point de départ, un point d'arrivée, une liste de clients, 
-    la longueur de la tournée et la totale des profits.
+    Représente une tournée qui contient un DataFrame de points incluant le point de départ,
+    les clients, et le point d'arrivée.
 
     Attributes:
-        pt_depart (Point): Le point de départ de la tournée.
-        pt_arrivee (Point): Le point d'arrivée de la tournée.
-        clients (List[Point]): Liste des clients (points) visités pendant la tournée.
+        points_df (pandas.DataFrame): DataFrame contenant les points de la tournée.
         longueur (float): Distance totale parcourue pendant la tournée.
-        total_profit (float) : profits de toutes les clients visité
+        total_profit (float): Profit total accumulé pendant la tournée.
     """
 
-    def __init__(self, pt_depart, pt_arrivee, clients):
+    def __init__(self, points_df):
         """
-        Initialise une nouvelle tournée.
+        Initialise une nouvelle tournée avec un DataFrame de points.
         """
-        self.pt_depart = pt_depart
-        self.pt_arrivee = pt_arrivee
-        self.clients = clients
+        self.points_df = points_df
         self.longueur = self.calculer_longueur()
         self.total_profit = self.calculer_total_profit()
 
@@ -28,62 +22,28 @@ class Tournee:
         Calcule la longueur totale de la tournée.
         """
         longueur = 0
-        point_precedent = self.pt_depart
-
-        # Parcourir tous les clients
-        for client in self.clients:
-            longueur += point_precedent.distance_to(client)
-            point_precedent = client
-
-        # Ajouter la distance du dernier client à l'arrivée
-        longueur += point_precedent.distance_to(self.pt_arrivee)
-
+        for i in range(len(self.points_df) - 1):
+            point_actuel = self.points_df.iloc[i]
+            point_suivant = self.points_df.iloc[i + 1]
+            longueur += ((point_actuel['x'] - point_suivant['x']) ** 2 + (point_actuel['y'] - point_suivant['y']) ** 2) ** 0.5
         return longueur
-    
 
     def calculer_total_profit(self):
         """
-        Calcule le profit total de la tournée en additionnant le profit de chaque client visité.
-
-        Returns:
-            float: Le profit total de la tournée.
+        Calcule le profit total de la tournée.
         """
-        return sum(client.profit for client in self.clients)
-    
-    
-    def fusion(self, t):
-        """
-        Fusionne cette tournée avec une autre tournée.
-
-        Parameters:
-            t (Tournee): La tournée à fusionner avec celle-ci.
-        """
-        # Fusionner les listes de clients
-        self.clients.extend(t.clients)
-
-        # Mettre à jour le point d'arrivée
-        self.pt_arrivee = t.pt_arrivee
-
-        # Recalculer la longueur et le profit total
-        self.longueur = self.calculer_longueur()
-        self.total_profit = self.calculer_total_profit()
+        return self.points_df['profit'].sum()
 
 
 
+"""
 # Exemple d'utilisation :
-pt_depart = Point(0, 0, 0)
-pt_arrivee = Point(10, 10, 0)
-clients = [Point(1, 2, 30), Point(3, 4, 40), Point(5, 6, 50)]
+import pandas as pd
 
-tournee = Tournee(pt_depart, pt_arrivee, clients)
+# Création d'un DataFrame pour représenter les points de la tournée
+df = pd.DataFrame({'x': [0, 1, 2, 10], 'y': [0, 2, 3, 10], 'profit': [0, 30, 40, 0]})
+
+tournee = Tournee(df)
 print(f"Longueur de la tournée: {tournee.longueur}")
 print(f"Profit total de la tournée: {tournee.total_profit}")
-
-# Exemple d'utilisation :
-tournee1 = Tournee(pt_depart, pt_arrivee, [Point(1, 2, 30), Point(3, 4, 40)])
-tournee2 = Tournee(Point(10, 10, 0), Point(20, 20, 0), [Point(6, 7, 50), Point(8, 9, 60)])
-
-tournee1.fusion(tournee2)
-print(f"Longueur de la tournée fusionnée: {tournee1.longueur}")
-print(f"Profit total de la tournée fusionnée: {tournee1.total_profit}")
-
+"""
