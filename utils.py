@@ -21,7 +21,8 @@ def read_file(chemin_du_fichier):
         data_structure['m'] = int(file.readline().split()[1]) # nombre de vehicules
         data_structure['tmax'] = float(file.readline().split()[1]) # Temps de parcours limite 
 
-        # Lire le reste du fichier dans un DataFrame
+    
+    # Lire le reste du fichier dans un DataFrame
     df = pd.read_csv(chemin_du_fichier, skiprows=3, delim_whitespace=True, names=['x', 'y', 'profit'])
 
     # Créer un objet Point pour le départ avec la première ligne de données
