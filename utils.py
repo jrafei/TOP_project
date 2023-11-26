@@ -1,17 +1,18 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 import point
+import numpy as np
 
 """_summary_
-        Lit un fichier text et extrait des informations spécifiques dans un dictionnaire.
+    Lit un fichier text et extrait des informations spécifiques dans un dictionnaire.
         
-        Parameters:
-        chemin_du_fichier (str): Le chemin complet du fichier texte à lire.
+    Parameters:
+    chemin_du_fichier (str): Le chemin complet du fichier texte à lire.
         
-        Returns:
-        dict: Un dictionnaire contenant les clés 'n', 'm', 'tmax' avec leurs valeurs respectives,
-        et un dataFrame 'points' contenant les coordonnées et les profits des clients avec les coordonnées de départ
-        en tete de dataFrame et les coordonnées d'arrivé en fin de la dataFrame 
+    Returns:
+    dict: Un dictionnaire contenant les clés 'n' (nombre de sommets), 'm' (nombre de tournées maximale), 'tmax' (temps limite d'une tournée) 
+    avec leurs valeurs respectives, et un dataFrame 'points' contenant les coordonnées et les profits des clients avec les coordonnées de départ
+    en tete de dataFrame et les coordonnées d'arrivé en fin du dataFrame 
 """
 def read_file(chemin_du_fichier):
     # Initialiser un dictionnaire pour contenir les variables
@@ -19,7 +20,7 @@ def read_file(chemin_du_fichier):
 
     # Lire les valeurs de n, m et tmax
     with open(chemin_du_fichier, 'r') as file:
-        data_structure['n'] = int(file.readline().split()[1]) # nombre de clients
+        data_structure['n'] = int(file.readline().split()[1]) # nombre de sommets
         data_structure['m'] = int(file.readline().split()[1]) # nombre de vehicules
         data_structure['tmax'] = float(file.readline().split()[1]) # Temps de parcours limite 
 
@@ -33,6 +34,76 @@ def read_file(chemin_du_fichier):
     return data_structure
 
 
+
+    """_summary_ [NON UTILISEE]
+    Crée une matrice de distance entre chaque paire de points dans le DataFrame.
+
+    Parameters:
+    df (pandas.DataFrame): DataFrame contenant les colonnes 'x', 'y', et 'profit'.
+
+    Returns:
+    numpy.ndarray: Une matrice carrée de distance.
+    """
+def distance_matrix(df):
+    n = len(df)
+    matrice = np.zeros((n, n))
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            # Calcul de la distance euclidienne
+            distance = np.sqrt((df.iloc[i]['x'] - df.iloc[j]['x'])**2 + 
+                               (df.iloc[i]['y'] - df.iloc[j]['y'])**2).round(2)
+            matrice[i, j] = matrice[j, i] = distance
+
+    return matrice
+
+
+
+    """_summary_
+    Calcule la distance euclidienne entre deux points.
+
+    Parameters:
+    point1 (pandas.Series): Un point avec les coordonnées x et y.
+    point2 (pandas.Series): Un autre point avec les coordonnées x et y.
+
+    Returns:
+    float: La distance euclidienne entre point1 et point2.
+    """
+def distance(point1, point2):
+    print("DISTANCE : ")
+    print(point1)
+    print("POINT 2 :")
+    print(point2)
+    return (((point2['x'] - point1['x']) ** 2 + (point2['y'] - point1['y']) ** 2) ** 0.5).round(2)
+
+
+    """_summary_
+    Calcule la somme des profits de toutes les tournées.
+    @Parameters:
+        tournees (list[Tournee]) : liste des tournées
+    @Returns:
+        float : la somme des profits de toutes les tournées
+    """
+def sum_tournees_profit(tournees):
+    profit = 0
+    for tournee in tournees:
+        profit += tournee.total_profit
+    return profit
+
+
+    """_summary_
+    Affiche les tournées
+    @Parameters:
+        tournees (list[Tournee]) : liste des tournées
+    @Returns:
+        void
+    """
+def print_tournees(tournees):
+    for tournee in tournees:
+        print(tournee)
+        
+        
+        
 """
   Affichage des tournées
    Parameters:
@@ -63,26 +134,6 @@ def print_plot(liste_tournees) :
     # Afficher le graphique
     plt.show()
 
-
-
-"""
-    Calcule la distance euclidienne entre deux points représentés par deux DataFrames.
-
-    Parameters:
-    df1 (pandas.DataFrame): DataFrame représentant le premier point.
-    df2 (pandas.DataFrame): DataFrame représentant le second point.
-
-    Returns:
-    float: La distance euclidienne entre les deux points.
-"""
-def distance(df1, df2):
-    # Extraction des coordonnées x et y
-    x1, y1 = df1['x'].iloc[0], df1['y'].iloc[0]
-    x2, y2 = df2['x'].iloc[0], df2['y'].iloc[0]
-
-    # Calcul de la distance euclidienne
-    distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
-    return distance
 
 
 """

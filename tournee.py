@@ -16,6 +16,7 @@ class Tournee:
         self.points_df = points_df
         self.longueur = self.calculer_longueur()
         self.total_profit = self.calculer_total_profit()
+        self.nb_clients = len(points_df) - 2
 
     def calculer_longueur(self):
         """
@@ -26,7 +27,7 @@ class Tournee:
             point_actuel = self.points_df.iloc[i]
             point_suivant = self.points_df.iloc[i + 1]
             longueur += ((point_actuel['x'] - point_suivant['x']) ** 2 + (point_actuel['y'] - point_suivant['y']) ** 2) ** 0.5
-        return longueur
+        return longueur.round(2)
 
     def calculer_total_profit(self):
         """
@@ -34,7 +35,11 @@ class Tournee:
         """
         return self.points_df['profit'].sum()
 
-
+    def __repr__(self):
+        """
+        Affiche la tournée.
+        """
+        return f"Tournee(longueur={self.longueur}, total_profit={self.total_profit})"
 
 """
 # Exemple d'utilisation :
