@@ -151,7 +151,9 @@ def calculate_savings_with_scores(customers: pd.DataFrame, distance_matrix : np.
 """
 
 
-
+"""
+    NON UTILISEE
+"""
 def team_orienteering_problem( customers, distance_matrix, max_distance, n):
     # Initialize routes and calculate savings with scores
     #depot = customers.iloc[0]
@@ -187,6 +189,9 @@ def team_orienteering_problem( customers, distance_matrix, max_distance, n):
     return list(routes.values())
 
 
+"""
+    NON UTILISEE
+"""
 def calculate_route_distance(route, distance_matrix):
     distance = 0
     for i in range(len(route) - 1):
