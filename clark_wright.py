@@ -54,7 +54,7 @@ def clarke_wright(top):
             if t1 != t2 :
                 u = t2.points_df.iloc[1] # le premier client de t2
                 #gain = distance(y,t) + distance(s,u) - distance(y,u) # gain de temps si on fusionne t1 et t2
-                gain = gain(y,u,s,t)
+                gain = get_gain(y,u,s,t)
                 tps = calculTempsIfFusion(t1,t2) # temps de parcours si on fusionne t1 et t2
 
                 # Si le temps de parcours est inférieur à tmax et le nouveau gain est supérieur au gain max
@@ -86,7 +86,7 @@ def clarke_wright(top):
     depart (dataframe) : représente les coordonnées du point de départ
     arrive (dataframe) : représente les coordonnées du point d'arrivée
     """
-def gain(i , j , depart, arrivee) : 
+def get_gain(i , j , depart, arrivee) : 
     return distance(i,arrivee) + distance(depart,j) - distance(i,j)
 
 
