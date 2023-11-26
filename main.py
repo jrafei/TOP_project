@@ -28,7 +28,7 @@ plt.legend()
 plt.show()
 """
 
-top = read_file("./data/Set_32_234/p1.4.q.txt")
+top = read_file("./data/Set_32_234/p1.4.r.txt")
 
 
 """ TEST INIT_MARGUERITE
@@ -36,9 +36,12 @@ top = read_file("./data/Set_32_234/p1.4.q.txt")
 #init = init_marguerite(top['points'], top['tmax'])
 
 tours = clarke_wright(top)
+if tours == None :
+    print("Aucune tournée n'a été générée !")
+    exit()
 print("==================================TOURS======================")
 print_tournees(tours)
 print("==================================FIN TOURS======================")
 profit = sum_tournees_profit(tours)
 print("Profit total : ", profit)
-print_plot(tours)
+print_plot(top["points"],tours)

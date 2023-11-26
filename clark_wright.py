@@ -37,7 +37,9 @@ def init_marguerite(points,tmax) :
 def clarke_wright(top):
     
     tours = init_marguerite(top['points'], top['tmax']) # type : list[Tournee] 
-    
+    if (tours == []) :
+        print("Aucune tournée n'a été générée !")
+        return None
     test = tours[0].points_df
     s = tours[0].points_df.iloc[0] # sommet de départ
     t = tours[0].points_df.iloc[-1] # sommet d'arrivée
@@ -51,8 +53,8 @@ def clarke_wright(top):
         for t2 in tours : # t2 de type Tournee
             if t1 != t2 :
                 u = t2.points_df.iloc[1] # le premier client de t2
-                gain = distance(y,t) + distance(s,u) - distance(y,u) # gain de temps si on fusionne t1 et t2
-                
+                #gain = distance(y,t) + distance(s,u) - distance(y,u) # gain de temps si on fusionne t1 et t2
+                gain = gain(y,u,s,t)
                 tps = calculTempsIfFusion(t1,t2) # temps de parcours si on fusionne t1 et t2
 
                 # Si le temps de parcours est inférieur à tmax et le nouveau gain est supérieur au gain max
@@ -62,6 +64,7 @@ def clarke_wright(top):
 
         if (ideal_tour2 != None) :
             fusion(t1,ideal_tour2) # Fusionne t1 et ideal_tour2 
+            opt_2(tours,t1) # Applique l'heuristique opt-2 sur ideal_tour2
             tours.remove(ideal_tour2) # Supprime ideal_tour2 de la liste des tournées
             
 
@@ -71,7 +74,22 @@ def clarke_wright(top):
     tours_triee = sorted(tours, key=lambda tournee: tournee.total_profit, reverse=True)
     
     return tours[:top['m']]
+  
+  
+  
     
+    """_summary_
+    Calcule le gain entre deux points i et j
+    @Parameters :
+    i (dataframe) : représente les coordonnées d'un client i
+    j (dataframe) : représente les coordonnées d'un client j
+    depart (dataframe) : représente les coordonnées du point de départ
+    arrive (dataframe) : représente les coordonnées du point d'arrivée
+    """
+def gain(i , j , depart, arrivee) : 
+    return distance(i,arrivee) + distance(depart,j) - distance(i,j)
+
+
 
     """_summary_
     Calcule le temps de parcours si on fusionne deux tournées
@@ -102,6 +120,18 @@ def fusion(t1,t2):
     return
 
 
+def opt_2(tours,tournee):
+    points = tournee.points_df
+    for i in range(1,len(points)-2): # parcours de tous les arcs de la tournée
+        for j in range(i+1,len(points)-1):
+            
+            if distance(points.iloc[i-1],points.iloc[j]) + distance(points.iloc[i],points.iloc[j+1]) < distance(points.iloc[i-1],points.iloc[i]) + distance(points.iloc[j],points.iloc[j+1]):
+                points.iloc[i:j+1] = points.iloc[j:i-1:-1].values
+                tournee.longueur = tournee.calculer_longueur()
+                tournee.total_profit = tournee.calculer_total_profit()
+                return
+            
+    return  # si on ne trouve pas d'amélioration, on ne fait rien et on sort de la fonction
 
     """_summary_
     Parameters : 
