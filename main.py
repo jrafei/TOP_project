@@ -28,7 +28,7 @@ plt.legend()
 plt.show()
 """
 
-top = read_file("./data/Set_32_234/p1.4.r.txt")
+top = read_file("./data/Set_32_234/p1.2.b.txt")
 
 
 """ TEST INIT_MARGUERITE
