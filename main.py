@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 from tournee import *
-from clark_wright import *
+#from clark_wright import *
 from utils import *
+from clark_wright_class import *
 """
 # Extraire les coordonnées x et y
 x = df_points['x']
@@ -31,8 +32,8 @@ plt.show()
 top = read_file("./data/Set_32_234/p1.2.b.txt")
 
 
-""" TEST INIT_MARGUERITE
-"""
+""" TEST INIT_MARGUERITE V0 et V1
+
 #init = init_marguerite(top['points'], top['tmax'])
 
 tours = clarke_wright(top)
@@ -45,3 +46,8 @@ print("==================================FIN TOURS======================")
 profit = sum_tournees_profit(tours)
 print("Profit total : ", profit)
 print_plot(top["points"],tours)
+"""
+
+# TEST AVEC DES CLASSES
+l = init_marguerite(top['points'], top['tmax'])
+print(l)
