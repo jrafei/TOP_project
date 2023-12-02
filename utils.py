@@ -20,11 +20,15 @@ def read_file(chemin_du_fichier):
     data_structure = {}
 
     # Lire les valeurs de n, m et tmax
-    with open(chemin_du_fichier, 'r') as file:
-        data_structure['n'] = int(file.readline().split()[1]) # nombre de sommets
-        data_structure['m'] = int(file.readline().split()[1]) # nombre de vehicules
-        data_structure['tmax'] = float(file.readline().split()[1]) # Temps de parcours limite 
+    try :
+        with open(chemin_du_fichier, 'r') as file:
+            data_structure['n'] = int(file.readline().split()[1]) # nombre de sommets
+            data_structure['m'] = int(file.readline().split()[1]) # nombre de vehicules
+            data_structure['tmax'] = float(file.readline().split()[1]) # Temps de parcours limite 
 
+    except FileNotFoundError:
+        print("Le fichier n'existe pas !")
+        return None
     
     # Lire le reste du fichier dans un DataFrame
     df = pd.read_csv(chemin_du_fichier, skiprows=3, delim_whitespace=True, names=['x', 'y', 'profit'])

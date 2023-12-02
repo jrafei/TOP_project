@@ -11,6 +11,8 @@ from route import *
     
     @Returns:
     listeTournees: Retourne une liste de tournées.
+    
+    @Complexité: O(n)
 """
 def init_marguerite(points,tmax) : 
     
@@ -41,14 +43,16 @@ def init_marguerite(points,tmax) :
         en tete de dataFrame et les coordonnées d'arrivé en fin du dataFrame 
         @Returns:
         list[Tournee] : Retourne une liste de tournées.
+        
+        @Complexité: O(n^2)
     """
 def clarke_wright(top):
-    tours = init_marguerite(top['points'], top['tmax']) # type : list[Tournee] 
+    tours = init_marguerite(top['points'], top['tmax']) # type : list[Tournee]  , complexité : O(n)
     if (tours == []) :
         print("Aucune tournée a une distance plus petite ou égale au tmax !")
         return None
     
-    svl = SavingList(tours) # type : dictionnaire (clé : tuple de type Point, valeur : float)
+    svl = SavingList(tours) # type : dictionnaire (clé : tuple de type Point, valeur : float) , complexité : O(n^2)
     
     while svl != {} :
         
@@ -56,18 +60,18 @@ def clarke_wright(top):
         couple = max(svl, key=svl.get)
         
         # prendre la tournée ayant comme dernier client le premier point de l'arc
-        iRoute = getEndingRoute(couple[0], tours)
+        iRoute = getEndingRoute(couple[0], tours) #Complexité : O(n)
         # prendre la tournée ayant comme premier client le deuxième point de l'arc
-        jRoute = getStartingRoute(couple[1], tours)
+        jRoute = getStartingRoute(couple[1], tours) #Complexité : O(n)
         
         # Verifie que couple relie deux tournées différentes, que i est le dernier client de t1 et que j est le premier client de t2
         # et que la fusion des deux tournées ne dépasse pas le tmax
-        verify = validateMergeDriver(iRoute, jRoute, top['tmax'])
+        verify = validateMergeDriver(iRoute, jRoute, top['tmax']) #@Complexité : O(1)
         
         if (verify == True) :
             # Fusion des deux tournées
             fusion(iRoute, jRoute)
-            opt_2(iRoute)
+            opt_2(iRoute) # Complexité : O(n^2)
             tours.remove(jRoute)
             # Suppression des arcs de la saving list
             # Mise à jour de la saving list
