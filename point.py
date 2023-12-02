@@ -1,5 +1,5 @@
 class Point:
-    """ [NON UTILISEE]
+    """
     Représente un point dans un espace bidimensionnel avec un profit associé.
 
     Attributes:
@@ -47,8 +47,3 @@ class Point:
         """
         return f"Point(x={self.x}, y={self.y}, profit={self.profit})"
 
-    def afficher(self):
-        """
-        Affiche les attributs du point.
-        """
-        print(self.__str__())

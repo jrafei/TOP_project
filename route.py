@@ -1,25 +1,23 @@
-import point
-
 class Route:
     """
     Représente une route constituée de segments entre des points.
 
     Attributes:
-        points (list of tuple of Point): Liste des couples de points formant les segments de la route.
+        arcs (list of tuple of Point): Liste des couples de points formant les segments de la route.
         longueur (float): Longueur totale de la route.
         profit (float): Profit associé à la route.
     """
 
-    def __init__(self, points):
+    def __init__(self, arcs):
         """
-        Initialise une nouvelle route avec la liste des couples de points fournie.
+        Initialise une nouvelle route avec la liste des couples de arcs fournie.
 
         Parameters:
-            points (list of tuple of Point): Liste des couples de points formant les segments de la route.
+            arcs (list of tuple of Point): Liste des couples de points formant les segments de la route.
         """
-        self.points = points
+        self.arcs = arcs
         self.longueur = self.calculer_longueur()
-        self.profit = self.calculer_profit()  # Vous devrez définir cette méthode selon votre logique de calcul de profit
+        self.profit = self.calculer_profit()  # Profit total de la route
 
     def calculer_longueur(self):
         """
@@ -29,9 +27,9 @@ class Route:
             float: La longueur totale de la route.
         """
         longueur_totale = 0.0
-        for point1, point2 in self.points:
+        for (point1, point2) in self.arcs:
             longueur_totale += point1.distance_to(point2)
-        return longueur_totale
+        return longueur_totale.round(2)
 
 
     def calculer_profit(self):
@@ -42,9 +40,9 @@ class Route:
             float: Le profit total de la route.
         """
         profit_total = 0.0
-        points_vus = set()  # Pour éviter de compter le même point plusieurs fois
+        points_vus = set()  
 
-        for segment in self.points:
+        for segment in self.arcs:
             for point in segment:
                 # Vérifie si ce point a déjà été compté
                 if point not in points_vus:
@@ -64,18 +62,18 @@ class Route:
         Parameters:
             autre_route (Route): L'autre route à fusionner avec cette route.
         """
-        dernier_arc_t1 = self.points[-1]
-        premier_arc_t2 = autre_route.points[0]
+        dernier_arc_t1 = self.arcs[-1]
+        premier_arc_t2 = autre_route.arcs[0]
         
         if (dernier_arc_t1[0] != premier_arc_t2[0]):
             raise Exception("Le dernier client de la route ne correspond pas au premier client de départ du nouveau arc.")
         
         # On remplace le dernier arc de la route par l'arc qui relie le dernier client au premier client de l'autre route
-        self.points[-1] = (dernier_arc_t1[0], premier_arc_t2[1])
+        self.arcs[-1] = (dernier_arc_t1[0], premier_arc_t2[1])
         # On enlève le premier arc de l'autre route
-        autre_route.points.pop(0)
+        autre_route.arcs.pop(0)
         # On ajoute les arcs de l'autre route à la fin de la route
-        self.points.extend(autre_route.points)
+        self.arcs.extend(autre_route.arcs)
         
         self.longueur = self.calculer_longueur()
         self.profit = self.calculer_profit()
@@ -87,8 +85,3 @@ class Route:
         """
         return f"Route(longueur={self.longueur}, profit={self.profit})"
 
-    def afficher(self):
-        """
-        Affiche les attributs de la route.
-        """
-        print(self.__str__())
