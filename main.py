@@ -3,11 +3,6 @@ import csv
 from utils import *
 from clark_wright_class import *
 
-def print_to_file(file, *args, **kwargs):
-    """
-    Imprime les arguments dans un fichier spécifié.
-    """
-    print(*args, **kwargs, file=file)
 
 
 # Nom du fichier CSV
@@ -30,6 +25,8 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
     for x in list:
         top = read_file("./data/Set_32_234/p1.2."+x+".txt")
 
+        print(top['points'].iloc[0])
+        break
         if top == None:
             continue
         
@@ -42,8 +39,6 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
         """
         
         # Collecter les données à écrire
-        
-
         routes = clarke_wright(top)
         if routes == None :
             continue

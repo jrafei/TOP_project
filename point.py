@@ -10,7 +10,7 @@ class Point:
         arrive (bool): Le Node est un Node d'arrivée ou non.
     """
    
-    def __init__(self, x, y, profit,dep,arriv):
+    def __init__(self, x, y, profit):
         """
         Initialise un nouveau Node avec les coordonnées et le profit fournis.
 
@@ -24,8 +24,6 @@ class Point:
         self.x = x
         self.y = y
         self.profit = profit
-        self.depart = dep
-        self.arrive = arriv
         
         
     def distance_to(self, other):
