@@ -1,11 +1,7 @@
 import csv
-import sys
-import matplotlib.pyplot as plt
-from tournee import *
 #from clark_wright import *
 from utils import *
 from clark_wright_class import *
-from clark_wright import *
 
 def print_to_file(file, *args, **kwargs):
     """
@@ -20,7 +16,7 @@ nom_fichier_csv = 'output.csv'
 # En-têtes des colonnes
 en_tetes = ['alphabet', 'tmps_max', 'nb_clients', 'nb_tournees', 'profit_total']
 
-list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n']
+list = ['a','b','c','d','e','f']
 
 # Ouvrir un fichier CSV pour l'écriture
 with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:

@@ -48,6 +48,7 @@ def init_marguerite(points,tmax) :
     """
 def clarke_wright(top):
     tours = init_marguerite(top['points'], top['tmax']) # type : list[Tournee]  , complexité : O(n)
+    
     if (tours == []) :
         print("Aucune tournée a une distance plus petite ou égale au tmax !")
         return None
