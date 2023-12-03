@@ -1,43 +1,48 @@
-import matplotlib.pyplot as plt
-from tournee import *
-from clark_wright import *
-
-dict = read_file("./data/Set_32_234/p1.2.a.txt")
-
-df_points = dict['points']
-
-"""
-# Extraire les coordonnées x et y
-x = df_points['x']
-y = df_points['y']
+import csv
+from utils import *
+from clark_wright_class import *
 
 
-# Créer un graphique de dispersion pour tous les points
-plt.scatter(x, y, color='blue')  # Points intermédiaires en bleu
 
-# Point de départ en rouge
-plt.scatter(x.iloc[0], y.iloc[0], color='red', label='Départ')
+# Nom du fichier CSV
+nom_fichier_csv = 'output_1.csv'
 
-# Point d'arrivée en vert
-plt.scatter(x.iloc[-1], y.iloc[-1], color='green', label='Arrivée')
+# En-têtes des colonnes
+en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total']
 
-# Ajouter des titres, des étiquettes et une légende
-plt.title("Affichage des Points")
-plt.xlabel("Coordonnée X")
-plt.ylabel("Coordonnée Y")
-plt.legend()
+#list = ['a','b','c','d','e','f']
+list = ['g','h','i','j','k','l','m','n','o','p','q']
 
+# Ouvrir un fichier CSV pour l'écriture
+with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
+    writer = csv.writer(fichier_csv,delimiter=';')
 
-# Afficher le graphique
-plt.show()
-"""
+    # Écrire l'en-tête
+    writer.writerow(en_tetes)
 
-"""_summary_
-    affichage des tournées
-"""
-# Exemple d'utilisation
-point1 = df_points.iloc[[0]]  # Premier point
-point2 = df_points.iloc[[1]]  # Deuxième point
-
-distance = distance(point1, point2)
-print("Distance:", round(distance,2))
+    
+    for x in list:
+        top = read_file("./data/Set_32_234/p1.2."+x+".txt")
+        
+        """ #ECRIRE SUR UN FICHIER TXT
+        print("================================== TEST ",x ," ======================")
+        print("1.2."+x+".txt")
+        print_to_file(file, "Temps Max : ", top['tmax'])
+        print_to_file(file, "Nombre de Tournees : ", top['m'])
+        print_to_file(file, "Nombre de Clients : ", top['n'])
+        """
+        
+        # Collecter les données à écrire
+        routes = clarke_wright(top['points'], top['tmax'], top['m'])
+        if routes == None :
+            continue
+        profit = sum_tournees_profit(routes)
+        
+        donnees = [x, top['tmax'], top['n'], top['m'], profit]
+        #print_to_file(file,"Profit total : ", profit)
+        writer.writerow(donnees)
+        
+        #for route in routes:            
+        #    print(route)
+        
+        #print_plot(routes,top["points"])

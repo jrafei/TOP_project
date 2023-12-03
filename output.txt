@@ -1,0 +1,43 @@
+================================== TEST  a  ======================
+1.4.a.txt
+Temps Max :  2.5
+Nombre de Tournees :  2
+Nombre de Clients :  32
+Aucune tourn�e a une distance plus petite ou �gale au tmax !
+================================== TEST  b  ======================
+1.4.b.txt
+Temps Max :  5.0
+Nombre de Tournees :  2
+Nombre de Clients :  32
+Profit total :  15.0
+Route(longueur=4.14, profit=10.0)
+Route(longueur=4.67, profit=5.0)
+================================== TEST  c  ======================
+1.4.c.txt
+Temps Max :  7.5
+Nombre de Tournees :  2
+Nombre de Clients :  32
+Profit total :  20.0
+Route(longueur=6.87, profit=15.0)
+Route(longueur=7.23, profit=5.0)
+================================== TEST  d  ======================
+1.4.d.txt
+Temps Max :  10.0
+Nombre de Tournees :  2
+Nombre de Clients :  32
+Profit total :  25.0
+Route(longueur=6.87, profit=15.0)
+Route(longueur=9.9, profit=10.0)
+================================== TEST  e  ======================
+1.4.e.txt
+Temps Max :  12.5
+Nombre de Tournees :  2
+Nombre de Clients :  32
+Profit total :  40.0
+Route(longueur=12.28, profit=20.0)
+Route(longueur=11.6, profit=20.0)
+================================== TEST  f  ======================
+1.4.f.txt
+Temps Max :  15.0
+Nombre de Tournees :  2
+Nombre de Clients :  32
