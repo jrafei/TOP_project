@@ -1,8 +1,6 @@
 from utils import *
-import point
 from route import *
-
-
+from node import Node
 """
     initialise la marguerite : nc tours d'un seul client respectant la contrainte de temps
     @Parameters:
@@ -17,18 +15,18 @@ def init_marguerite(points,tmax) :
     
     # Extraction du point de départ
     depart = points.iloc[0] 
-    pt_depart = point.Point(depart['x'],depart['y'],depart['profit'])
+    pt_depart = Node(depart['x'],depart['y'],depart['profit'])
     
     # Extraction du point d'arrivee
     arrivee = points.iloc[-1]
-    pt_arrivee = point.Point(arrivee['x'],arrivee['y'],arrivee['profit'] )
+    pt_arrivee = Node(arrivee['x'],arrivee['y'],arrivee['profit'] )
     
     # Extraction des clients
     clients = points.iloc[1:-1]
     listeTournees = []
     liste_noeuds = [pt_depart]
     for _,row in clients.iterrows():
-        client = point.Point(row['x'],row['y'],row['profit'])
+        client = Node(row['x'],row['y'],row['profit'])
         test_time = client.distance_to(pt_depart) + client.distance_to(pt_arrivee)
         if test_time <= tmax :
             liste_noeuds.append(client)
