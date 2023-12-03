@@ -3,7 +3,7 @@
 Temps Max :  2.5
 Nombre de Tournees :  2
 Nombre de Clients :  32
-Aucune tournée a une distance plus petite ou égale au tmax !
+Aucune tournï¿½e a une distance plus petite ou ï¿½gale au tmax !
 ================================== TEST  b  ======================
 1.4.b.txt
 Temps Max :  5.0

@@ -1,4 +1,3 @@
-import pandas as pd
 from utils import *
 import point
 from route import *
@@ -18,72 +17,80 @@ def init_marguerite(points,tmax) :
     
     # Extraction du point de départ
     depart = points.iloc[0] 
-    pt_depart = point.Point(depart['x'],depart['y'],depart['profit'],True,False)
+    pt_depart = point.Point(depart['x'],depart['y'],depart['profit'])
     
     # Extraction du point d'arrivee
     arrivee = points.iloc[-1]
-    pt_arrivee = point.Point(arrivee['x'],arrivee['y'],arrivee['profit'], False, True )
+    pt_arrivee = point.Point(arrivee['x'],arrivee['y'],arrivee['profit'] )
     
     # Extraction des clients
     clients = points.iloc[1:-1]
     listeTournees = []
-    for i in range(len(clients)) :
-        client = point.Point(clients.iloc[i]['x'],clients.iloc[i]['y'],clients.iloc[i]['profit'],False,False)
+    liste_noeuds = [pt_depart]
+    for _,row in clients.iterrows():
+        client = point.Point(row['x'],row['y'],row['profit'])
         test_time = client.distance_to(pt_depart) + client.distance_to(pt_arrivee)
         if test_time <= tmax :
-            listeTournees.append(Route([(pt_depart,client),(client,pt_arrivee)]))
-        
-    return listeTournees 
+            liste_noeuds.append(client)
+            listeTournees.append(Route([pt_depart,client,pt_arrivee]))
+    
+    liste_noeuds.append(pt_arrivee)
+    
+    return listeTournees, liste_noeuds
 
 
     """_summary_
         @Parameters:
-        top : un dictionnaire contenant les clés 'n', 'm', 'tmax' avec leurs valeurs respectives,
-        et un dataFrame 'points' contenant les coordonnées et les profits des clients avec les coordonnées de départ
+        points : un dataFrame contenant les coordonnées et les profits des clients avec les coordonnées de départ
         en tete de dataFrame et les coordonnées d'arrivé en fin du dataFrame 
+        tmax : float : le temps de parcours maximal
+        m : int : le nombre de tournées à retourner
         @Returns:
         list[Tournee] : Retourne une liste de tournées.
         
-        @Complexité: O(n^2)
+        @Complexité: O(n^2 * x)) avec x le nombre d'arc possible = n*(n-1)/2 donc Complexite = O(n^2)
     """
-def clarke_wright(top):
-    tours = init_marguerite(top['points'], top['tmax']) # type : list[Tournee]  , complexité : O(n)
+def clarke_wright(points, tmax, m) :
+    tours,liste_noeuds = init_marguerite(points, tmax) # tours : list[Tournee]  , liste_noeuds : list[node] , complexité : O(n)
     
     if (tours == []) :
         print("Aucune tournée a une distance plus petite ou égale au tmax !")
         return None
     
-    svl = SavingList(tours) # type : dictionnaire (clé : tuple de type Point, valeur : float) , complexité : O(n^2)
+    svl = SavingList(liste_noeuds) # type : liste trié par ordre croissant ( liste de tuple de type Point) , complexité : O(n^2)
     
-    while svl != {} :
+    while svl != [] :
         
         # prendre le couple de points (arc) ayant le gain max
-        couple = max(svl, key=svl.get)
+        couple = svl.pop() #Complexité : O(1)
         
         # prendre la tournée ayant comme dernier client le premier point de l'arc
         iRoute = getEndingRoute(couple[0], tours) #Complexité : O(n)
         # prendre la tournée ayant comme premier client le deuxième point de l'arc
         jRoute = getStartingRoute(couple[1], tours) #Complexité : O(n)
         
-        # Verifie que couple relie deux tournées différentes, que i est le dernier client de t1 et que j est le premier client de t2
+        # Verifie que couple relie deux tournées différentes,
         # et que la fusion des deux tournées ne dépasse pas le tmax
-        verify = validateMergeDriver(iRoute, jRoute, top['tmax']) #@Complexité : O(1)
+        verify = validateMergeDriver(iRoute, jRoute, tmax) # Complexité : O(1)
         
         if (verify == True) :
             # Fusion des deux tournées
-            fusion(iRoute, jRoute)
-            opt_2(iRoute) # Complexité : O(n^2)
-            tours.remove(jRoute)
-            # Suppression des arcs de la saving list
-            # Mise à jour de la saving list
-            #updateSavingList(svl, tours)
+            iRoute.fusion(jRoute) #Complexité : O(n) 
+            opt_2(iRoute) # Complexité : O(n^2) 
+            tours.remove(jRoute) # Complexité : O(n)
+            
+            # pour reduire le temps de parcours d'une tournée, on interdit le parcours d'une arete plus qu'une fois 
+            x = (couple[1],couple[0]) 
+            if x in svl : # Complexité : O(n)
+                svl.remove(x) # Complexité : O(n)
     
-        del svl[couple]
-    
+         
     # prendre les m tounrés ayant le plus de profit
     tours_triee = sorted(tours, key=lambda route: route.profit, reverse=True)
-    
-    return tours_triee[:top['m']]
+    res = tours_triee[:m] # Complexité : O(n*log(n))
+    for route in res :
+        opt_2(route) # Complexité : O(n^2)
+    return res
 
 
     """_summary_
@@ -100,58 +107,36 @@ def validateMergeDriver(iRoute, jRoute, tmax) :
         return False
     
     # temps de la route i sans le dernier arc
-    tmp1 = iRoute.longueur - iRoute.arcs[-1][0].distance_to(iRoute.arcs[-1][1]) 
+    tmp1 = iRoute.longueur - iRoute.nodes[-2].distance_to(iRoute.nodes[-1]) 
     # temps de la route j sans le premier arc
-    tmp2 = jRoute.longueur - jRoute.arcs[0][0].distance_to(jRoute.arcs[0][1])
-    t = iRoute.arcs[-1][0].distance_to(jRoute.arcs[0][1])
+    tmp2 = jRoute.longueur - jRoute.nodes[0].distance_to(jRoute.nodes[1])
+    t = iRoute.nodes[-2].distance_to(jRoute.nodes[1])
     if (tmp1 + tmp2 + t) > tmax :
         return False
     
     return True
 
 
-"""
-    @Parameters:
-    iRoute : Route : la tournée ayant comme dernier client le premier point de l'arc
-    jRoute : Route : la tournée ayant comme premier client le deuxième point de l'arc
-    @Returns:
-    None
-"""
-def fusion(iRoute, jRoute):
-    #Creer un nouveau arc qui relie le dernier client de la tournée i au premier client de la tournée j
-    arc1 = (iRoute.arcs[-1][0], jRoute.arcs[0][1])
-    #Remplacer le dernier arc de la tournée i par le nouveau arc
-    iRoute.arcs[-1] = arc1
-    #Coller les arcs de la tournée j à la fin de la tournée i sauf le premier arc
-    iRoute.arcs.extend(jRoute.arcs[1:])
-    #Mettre à jour la longueur et le profit de la tournée i
-    iRoute.longueur = iRoute.calculer_longueur()
-    #Mettre à jour la longueur et le profit de la tournée i
-    iRoute.profit = iRoute.profit + jRoute.profit
-    
-    return None
 
     """_summary_
-    calculer le gain de temps pour chaque arc
+    calculer le gain de profits et de temps, en donnant plus de poids au profit
     @Parameters:
-        routes : list[Tournee] : liste des tournées
+        liste_noeuds : list[Point] : liste des points
     @returns:
-        dict : dictionnaire contenant les clés (tuple de type Point) et les valeurs (float)
+        dict : dictionnaire triée par ordre croissant contenant les clés (tuple de type Point) et les valeurs (float)
     """
-def SavingList(routes):
-    liste_points = getSetPoints(routes)
+def SavingList(liste_noeuds):
     saving_list = {}
-    depart = routes[0].arcs[0][0]
-    arrivee = routes[0].arcs[-1][1]
-    for client1 in liste_points :
-        for client2 in liste_points :
+    depart = liste_noeuds[0]
+    arrivee = liste_noeuds[-1]
+    for client1 in liste_noeuds[1:-1] :
+        for client2 in liste_noeuds[1:-1] :
             if client1 != client2 :
-                gain1 = get_gain(client1,client2,depart,arrivee)
+                gain1 = 4*get_gain_profit(client1,client2) + get_gain_temps(client1,client2,depart,arrivee)
                 saving_list[(client1,client2)] = gain1
-                gain2 = get_gain(client2,client1,depart,arrivee)
-                saving_list[(client2,client1)] = gain2
-    
-    return saving_list
+                
+    sorted_savings = [couple for couple, _ in sorted(saving_list.items(), key=lambda x: x[1])] # Complexité : O(n^2)
+    return sorted_savings
 
 
     """_summary_
@@ -164,5 +149,18 @@ def SavingList(routes):
     @Returns:
         float : le gain de temps si on fusionne t1 et t2
     """
-def get_gain(i,j,depart, arrivee):
+def get_gain_temps(i,j,depart, arrivee):
     return distance(i,arrivee) + distance(depart,j) - distance(i,j)
+
+def get_gain_profit(i,j):
+    return i.profit + j.profit
+
+
+    """_summary_
+    calcule la distance entre deux points
+    @Parameters:
+        i : Point : le premier point
+        j : Point : le deuxième point
+    @Returns:
+        float : la distance entre les deux points
+    """
