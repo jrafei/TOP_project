@@ -74,7 +74,12 @@ def clarke_wright(points, tmax, m) :
         if (verify == True) :
             # Fusion des deux tournées
             iRoute.fusion(jRoute) #Complexité : O(n)
+            #print_plot(tours,points)
+            #print("debut opt-2")
+            #print("sur la tournée :")
+            #iRoute.print_nodes()
             opt_2(iRoute) # Complexité : O(n^2) 
+            #print("fin opt-2")
             tours.remove(jRoute) # Complexité : O(n)
             
             # pour reduire le temps de parcours d'une tournée, on interdit le parcours d'une arete plus qu'une fois 

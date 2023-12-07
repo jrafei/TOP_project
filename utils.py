@@ -1,3 +1,4 @@
+from time import sleep
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -92,10 +93,14 @@ def opt_2(route):
                     imin = i
                     jmin = j
                     
+        deltamin = round(deltamin,2)
+        
         if deltamin < 0 and imin != -1 and jmin != -1:
-            
+            #print("imin = ", imin, " jmin = ", jmin, " delta = ", deltamin)  
             new_nodes = noeuds[:imin+1] + noeuds[jmin:imin:-1] + noeuds[jmin+1:]
             route.nodes = new_nodes
+            #route.print_nodes()
+            #sleep(1)
             noeuds = route.nodes
             improved = True
         else :
