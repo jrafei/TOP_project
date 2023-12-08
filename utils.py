@@ -1,4 +1,4 @@
-
+from time import sleep
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -58,7 +58,6 @@ def sum_tournees_profit(routes):
 
 
 
-
 """_summary_
     Applique l'heuristique opt-2 sur une tournée
     @Parameters:
@@ -71,35 +70,50 @@ def opt_2(route):
     improved = True
     noeuds = route.nodes
     
-    max_iterations = 1000  # Par exemple, définissez une limite maximale d'itérations
     current_iteration = 0
-  
-    while improved and current_iteration < max_iterations:
+    while improved :  
         current_iteration += 1
         imin = -1
         jmin = -1
-        deltamin = float('inf')  # Initialiser deltamin à l'infini
+        deltamin = float('inf') 
         for i in range(0, len(noeuds) - 3):
             for j in range(i + 2, len(noeuds)-1):
                 x = noeuds[i]
                 v = noeuds[j]
                 u = noeuds[i+1]
                 y = noeuds[j+1]
+                
+                # si l'arc (v,y) est avant l'arc (x,u) dans la tournée et contigus
+        
+                if (x.equal(y)):
+                    continue
                 delta = x.distance_to(v) + u.distance_to(y) - x.distance_to(u) - v.distance_to(y)
                 if delta < deltamin :
                     deltamin = delta
                     imin = i
                     jmin = j
+                    
+        deltamin = round(deltamin,2)
         
         if deltamin < 0 and imin != -1 and jmin != -1:
-            new_nodes = noeuds[:imin+1] + noeuds[jmin:imin+2:-1] + noeuds[jmin+1:]
+            #print("imin = ", imin, " jmin = ", jmin, " delta = ", deltamin)  
+            new_nodes = noeuds[:imin+1] + noeuds[jmin:imin:-1] + noeuds[jmin+1:]
             route.nodes = new_nodes
+            #route.print_nodes()
+            #sleep(1)
+            noeuds = route.nodes
             improved = True
         else :
             improved = False
-            
+      
     return route   
 
+
+def printNodes(nodes):
+    for node in nodes :
+        print(node)
+    print("================================== FIN ======================")
+    return None
 """_summary_
     Applique l'heuristique opt-2 sur une tournée
     choix de la permutation : la première permutation qui améliore la tournée

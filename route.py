@@ -69,4 +69,13 @@ class Route:
         Retourne une représentation en chaîne de caractères de la route.
         """
         return f"Route(longueur={self.longueur}, profit={self.profit})"
+    
+    def print_nodes(self):
+        """
+        Retourne une représentation en chaîne de caractères de la route.
+        """
+        print("Route : ")
+        for node in self.nodes :
+            print(node.__str__())
+        return None
 

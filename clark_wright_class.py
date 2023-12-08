@@ -73,8 +73,13 @@ def clarke_wright(points, tmax, m) :
         
         if (verify == True) :
             # Fusion des deux tournées
-            iRoute.fusion(jRoute) #Complexité : O(n) 
+            iRoute.fusion(jRoute) #Complexité : O(n)
+            #print_plot(tours,points)
+            #print("debut opt-2")
+            #print("sur la tournée :")
+            #iRoute.print_nodes()
             opt_2(iRoute) # Complexité : O(n^2) 
+            #print("fin opt-2")
             tours.remove(jRoute) # Complexité : O(n)
             
             # pour reduire le temps de parcours d'une tournée, on interdit le parcours d'une arete plus qu'une fois 
@@ -130,7 +135,7 @@ def SavingList(liste_noeuds):
     for client1 in liste_noeuds[1:-1] :
         for client2 in liste_noeuds[1:-1] :
             if client1 != client2 :
-                gain1 = 4*get_gain_profit(client1,client2) + get_gain_temps(client1,client2,depart,arrivee)
+                gain1 = 2*get_gain_profit(client1,client2) + get_gain_temps(client1,client2,depart,arrivee)
                 saving_list[(client1,client2)] = gain1
                 
     sorted_savings = [couple for couple, _ in sorted(saving_list.items(), key=lambda x: x[1])] # Complexité : O(n^2)
