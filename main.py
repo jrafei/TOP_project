@@ -5,7 +5,7 @@ import time
 
 
 # Nom du fichier CSV
-nom_fichier_csv = 'output_all.csv'
+nom_fichier_csv = 'output_all_v2.csv'
 
 # En-têtes des colonnes
 en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total', 'temps_execution']
@@ -46,7 +46,7 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
                 profit = sum_tournees_profit(routes)
                 
                 
-                donnees = [s+y+"."+x, top['tmax'], top['n'], top['m'], profit, round((end_time - start_time),4)]
+                donnees = [y+"."+x, top['tmax'], top['n'], top['m'], profit, round((end_time - start_time),4)]
                 #print_to_file(file,"Profit total : ", profit)
                 writer.writerow(donnees)
                 

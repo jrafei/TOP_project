@@ -75,7 +75,7 @@ def opt_2(route):
         current_iteration += 1
         imin = -1
         jmin = -1
-        deltamin = float('inf') 
+        deltamin = 1000#float('inf') 
         for i in range(0, len(noeuds) - 3):
             for j in range(i + 2, len(noeuds)-1):
                 x = noeuds[i]
@@ -83,11 +83,13 @@ def opt_2(route):
                 u = noeuds[i+1]
                 y = noeuds[j+1]
                 
-                # si l'arc (v,y) est avant l'arc (x,u) dans la tournée et contigus
-        
+                # si l'arc (v,y) et (x,u) sont contigusdans la tournée et contigus
                 if (x.equal(y)):
                     continue
                 delta = x.distance_to(v) + u.distance_to(y) - x.distance_to(u) - v.distance_to(y)
+                
+                #print(x.distance_to(v), " " , u.distance_to(y), " " ,  x.distance_to(u), " " ,  v.distance_to(y))
+                
                 if delta < deltamin :
                     deltamin = delta
                     imin = i
@@ -96,12 +98,15 @@ def opt_2(route):
         deltamin = round(deltamin,2)
         
         if deltamin < 0 and imin != -1 and jmin != -1:
-            #print("imin = ", imin, " jmin = ", jmin, " delta = ", deltamin)  
+            #print("imin = ", imin, " jmin = ", jmin, " delta = ", deltamin) 
+            #print("noeud imin = ",noeuds[imin], "  noeud jmin ", noeuds[jmin]) 
             new_nodes = noeuds[:imin+1] + noeuds[jmin:imin:-1] + noeuds[jmin+1:]
             route.nodes = new_nodes
-            #route.print_nodes()
-            #sleep(1)
             noeuds = route.nodes
+            #route.print_nodes()
+            #printNodes(noeuds)
+            #sleep(1)
+            
             improved = True
         else :
             improved = False

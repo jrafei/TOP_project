@@ -1,6 +1,7 @@
 from utils import *
 from route import *
 from node import Node
+from copy import deepcopy
 """
     initialise la marguerite : nc tours d'un seul client respectant la contrainte de temps
     @Parameters:
@@ -11,6 +12,8 @@ from node import Node
     
     @Complexité: O(n)
 """
+
+
 def init_marguerite(points,tmax) : 
     
     # Extraction du point de départ
@@ -55,45 +58,59 @@ def clarke_wright(points, tmax, m) :
         print("Aucune tournée a une distance plus petite ou égale au tmax !")
         return None
     
-    svl = SavingList(liste_noeuds) # type : liste trié par ordre croissant ( liste de tuple de type Point) , complexité : O(n^2)
-    
-    while svl != [] :
+    a = 0.1
+    max_profit = 0
+    max_tours = None
+    while a < 0.5 :
+                
+        svl = SavingList(liste_noeuds,a) # type : liste trié par ordre croissant ( liste de tuple de type Point) , complexité : O(n^2)
         
-        # prendre le couple de points (arc) ayant le gain max
-        couple = svl.pop() #Complexité : O(1)
+        copy_tours = deepcopy(tours) # Complexité : O(n)
         
-        # prendre la tournée ayant comme dernier client le premier point de l'arc
-        iRoute = getEndingRoute(couple[0], tours) #Complexité : O(n)
-        # prendre la tournée ayant comme premier client le deuxième point de l'arc
-        jRoute = getStartingRoute(couple[1], tours) #Complexité : O(n)
-        
-        # Verifie que couple relie deux tournées différentes,
-        # et que la fusion des deux tournées ne dépasse pas le tmax
-        verify = validateMergeDriver(iRoute, jRoute, tmax) # Complexité : O(1)
-        
-        if (verify == True) :
-            # Fusion des deux tournées
-            iRoute.fusion(jRoute) #Complexité : O(n)
-            #print_plot(tours,points)
-            #print("debut opt-2")
-            #print("sur la tournée :")
-            #iRoute.print_nodes()
-            opt_2(iRoute) # Complexité : O(n^2) 
-            #print("fin opt-2")
-            tours.remove(jRoute) # Complexité : O(n)
+        while svl != [] :
             
-            # pour reduire le temps de parcours d'une tournée, on interdit le parcours d'une arete plus qu'une fois 
-            x = (couple[1],couple[0]) 
-            if x in svl : # Complexité : O(n)
-                svl.remove(x) # Complexité : O(n)
-    
-         
-    # prendre les m tounrés ayant le plus de profit
-    tours_triee = sorted(tours, key=lambda route: route.profit, reverse=True)
-    res = tours_triee[:m] # Complexité : O(n*log(n))
-    for route in res :
-        opt_2(route) # Complexité : O(n^2)
-    return res
+            # prendre le couple de points (arc) ayant le gain max
+            couple = svl.pop() #Complexité : O(1)
+            
+            # prendre la tournée ayant comme dernier client le premier point de l'arc
+            iRoute = getEndingRoute(couple[0], copy_tours) #Complexité : O(n)
+            # prendre la tournée ayant comme premier client le deuxième point de l'arc
+            jRoute = getStartingRoute(couple[1], tours) #Complexité : O(n)
+            
+            # Verifie que couple relie deux tournées différentes,
+            # et que la fusion des deux tournées ne dépasse pas le tmax
+            verify = validateMergeDriver(iRoute, jRoute, tmax) # Complexité : O(1)
+            
+            if (verify == True) :
+                # Fusion des deux tournées
+                iRoute.fusion(jRoute) #Complexité : O(n)
+                #print_plot(tours,points)
+                #print("debut opt-2")
+                #print("sur la tournée :")
+                #iRoute.print_nodes()
+                opt_2(iRoute) # Complexité : O(n^2) 
+                #print("fin opt-2")
+                copy_tours.remove(jRoute) # Complexité : O(n)
+                
+                # pour reduire le temps de parcours d'une tournée, on interdit le parcours d'une arete plus qu'une fois 
+                x = (couple[1],couple[0]) 
+                if x in svl : # Complexité : O(n)
+                    svl.remove(x) # Complexité : O(n)
+        
+            
+        # prendre les m tounrés ayant le plus de profit
+        tours_triee = sorted(copy_tours, key=lambda route: route.profit, reverse=True)
+        res = tours_triee[:m] # Complexité : O(n*log(n))
+        for route in res :
+            opt_2(route) # Complexité : O(n^2)
+        
+        if sum_tournees_profit(res) > max_profit :
+            max_profit = sum_tournees_profit(res)
+            max_tours = res
+                
+        a += 0.05
+        
+    return max_tours
 
 
     """_summary_
@@ -128,14 +145,14 @@ def validateMergeDriver(iRoute, jRoute, tmax) :
     @returns:
         dict : dictionnaire triée par ordre croissant contenant les clés (tuple de type Point) et les valeurs (float)
     """
-def SavingList(liste_noeuds):
+def SavingList(liste_noeuds,a):
     saving_list = {}
     depart = liste_noeuds[0]
     arrivee = liste_noeuds[-1]
     for client1 in liste_noeuds[1:-1] :
         for client2 in liste_noeuds[1:-1] :
             if client1 != client2 :
-                gain1 = 2*get_gain_profit(client1,client2) + get_gain_temps(client1,client2,depart,arrivee)
+                gain1 = get_gain_temps(client1,client2,depart,arrivee,a) + (1-a) * get_gain_profit(client1,client2) 
                 saving_list[(client1,client2)] = gain1
                 
     sorted_savings = [couple for couple, _ in sorted(saving_list.items(), key=lambda x: x[1])] # Complexité : O(n^2)
@@ -152,8 +169,8 @@ def SavingList(liste_noeuds):
     @Returns:
         float : le gain de temps si on fusionne t1 et t2
     """
-def get_gain_temps(i,j,depart, arrivee):
-    return distance(i,arrivee) + distance(depart,j) - distance(i,j)
+def get_gain_temps(i,j,depart, arrivee,a ):
+    return distance(i,arrivee) + distance(depart,j) - a*distance(i,j)
 
 def get_gain_profit(i,j):
     return i.profit + j.profit
