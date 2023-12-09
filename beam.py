@@ -2,6 +2,7 @@ from utils import *
 from route import *
 from node import Node
 from nodeBeam import NodeBeam
+from copy import deepcopy
 
 
 """
@@ -25,99 +26,200 @@ def getNode_respect_time(points,tmax) :
     
     # Extraction des clients
     clients = points.iloc[1:-1]
-    liste_noeuds = [pt_depart]
+    liste_noeuds = []
     for _,row in clients.iterrows():
         client = Node(row['x'],row['y'],row['profit'])
         test_time = client.distance_to(pt_depart) + client.distance_to(pt_arrivee)
         if test_time <= tmax :
             liste_noeuds.append(client)
     
-    liste_noeuds.append(pt_arrivee)
+    #liste_noeuds.append(pt_arrivee)
     
     return liste_noeuds, pt_depart, pt_arrivee
 
 
 """_summary_
-    points : list[Node] = listes des clients (pourlesquel leurs tourné marguerite respectent la contrainte de temps)
+    points : list[Node] = listes des clients (pourlesquels leurs tourné marguerite respectent la contrainte de temps)
     tmax : float : le temps de parcours maximal
     m : int : le nombre de tournées à retourner
     beam_width : int : le nombre de noeuds à garder à chaque itération
     @Returns:
     list[NodeBeam] : Retourne une liste de tournées.
 """
-def beam (points,depart, arrive, tmax, m, beam_width) :
+def beam(clients,depart, arrive, tmax, m, beam_width) :
     liste_tournee = [] #Type : list[NodeBeam]
     
+    b_off = []
     k = 0
     while k<m : # Construction des m tournées
-        mu_zero = NodeBeam([depart],points,0,0) # mu_zero : NodeBeam
-        b = [mu_zero]
+        #print("=====================================================")
+        #print("k = ", k)
+        #print("LISTE DES TOUNEES : ",liste_tournee)
+        mu_zero = NodeBeam([depart],clients,0,0) # mu_zero : NodeBeam
+        b = [mu_zero] # liste des noeuds à chaque niveau de l'arbre
         l = 0
         bestK = mu_zero #muetoile
         
         # creation des noeuds fils des noeuds de b
         while b != [] : # tant que les sommets courants ne sont pas vide
-            
-            # creation des noeuds fils de mu
+            # creation des noeuds fils de mu respectant la contrainte de temps
             b_off = [] 
-            for mu in b :
-                pn = mu.getPneg()
-                pp = mu.getPplus()
-                t = mu.getTime()
-                p = mu.getProfit()
-                for i in range(0,len(pn)) : # rappel : Pneg est liste des noeuds non visités sans le dépôt et l'arrivée
-                    # Verifier que les noeuds fils de mu respectent la contrainte de temps
-                    if t + pn[i].distance_to(pp[-1]) + pn[i].distance_to(arrive) <= tmax :
-                        b_prime.append(NodeBeam(pp + [pn[i]],pn[:i] + pn[i+1:],p + pn[i].getProfit(), t + pn[i].distance_to(pp[-1])))
-            
-            
             l += 1 # on est dans le niveau suivant de l'arbre
             
-            # appel au 3-opt pour chaque noeud de b_off
+            pn = None
+            pp = None
+            for mu in b :
+                pn = (mu.getPneg()) # pn : liste des noeuds non visités sans le dépôt et l'arrivée
+                pp = (mu.getPplus()) # pp : liste des noeuds visités avec le dépôt et l'arrivée
+                t = mu.getTime() # temps de parcours de pplus (liste des noeuds visités avec le dépôt et SANS [] l'arrivée) 
+                p = mu.getProfit()
+                for i in range(0,len(pn)) : # rappel : Pneg est une liste des noeuds non visités sans le dépôt et l'arrivée
+                    b_off.append(NodeBeam(pp + [pn[i]], pn[:i] + pn[i+1:], p + pn[i].profit, t + pn[i].distance_to(pp[-1])))
+            
+    
+            #print("NIVEAU ", l)
+            # appel au 2-opt pour chaque noeud de b_off
             for mu in b_off :
-                mu = three_opt(mu)
+                two_opt(mu)
             
             # supprimer les noeuds de b_off qui ne respectent pas la contrainte de temps si on ajoute l'arc entre le dernier noeud de mu et le point d'arrivée
-            b_off = [mu for mu in b_off if mu.time + mu.Pplus[-1].distance_to(arrive) <= tmax]
+            b_off = [mu for mu in b_off if mu.time + mu.pplus[-1].distance_to(arrive) <= tmax]
             
-            # verifier si il existe un noeud feuille -> si le noeud n'a pas de fils noeuds aveclesquel on peut les fusionner
-            for nlj in b_off :
-                pn_nlj = nlj.getPneg()
-                if pn_nlj == [] :
-                    # si oui on ajoute l'arc entre le dernier noeud de nlj et le point d'arrivée
-                    nlj.add(arrive) # modifie le temps de parcours, le profit de nlj et pplus de nlj
-                    p_nlj = nlj.getProfit()
-                    if p_nlj > bestK.profit :
-                        bestK = nlj #muetoile = mulj
+            #print("==========Affichage des noeuds fils de b (b_off): ")
+            #print(b_off)
+            #print("=====================================================")
             
-            
-            b_prime = sorted(b_prime, key=lambda node: node.profit, reverse=True) # trier les noeuds de b_prime par ordre décroissant de profit
-            b = b_prime[:beam_width]
-            b_off = []
+            # verifier si les fils sont des feuilles
+            if b_off == [] :
+                for mlj in b :
+                    # mlj est une feuille
+                    # on ajoute l'arc entre le dernier noeud de mlj et le point d'arrivée
+                    mlj.add_ending_point(arrive) # modifie le temps de parcours, le profit de mlj et pplus de mlj
+                    profit_mlj = mlj.getProfit()
+                    if profit_mlj > bestK.profit :
+                        #print("<<<<<<<<<<<<<<<<<<<<<<meilleur trouveee!!!!!!!! : >>>>>>>>>>>>>>>>>>>>>")
+                        bestK = mlj #muetoile = mulj
+                        #bestK.print_nodebeam()
 
+            b_off = sorted(b_off, key=lambda node: (-node.time, node.profit), reverse=True) # trier les noeuds de b_off par ordre décroissant de profit
+            #print("--------------bestK : --------------")
+            #print(bestK)
+            
+            b = b_off[:beam_width]
+            b_off = []
+        
+        # on a trouvé un bestk pour la k-ième tournée    
+        #print("fin boucle while b != [], fin du parcours de noeuds de l'arbre (fin de l'itération k)")
+        #print(bestK)
+        #print(bestK.pplus)
+        
+        # afficher bestK (muetoile)
+        #print()
         # on ajoute la tournée ayant le plus de profit à la liste des tournées
+        two_opt(bestK)
         liste_tournee.append(bestK)
         # on supprime les noeuds de la tournée de la liste des noeuds
-        points = [node for node in points if node not in bestK.Pplus]
+        
+        clients = [node for node in clients if node not in bestK.pplus]
         k += 1
+        #print(liste_tournee)
+        #print("=====================================================")
     
+    
+    #print("FIN DE L'ALGORITHME BEAM SEARCH")
+    #for mu in liste_tournee :
+    #    print("Tournée : ")
+    #    for pp in mu.pplus :
+    #        print(pp)
+            
     return liste_tournee
-        
 
 
-    """_summary_
-    A REVOIR PAS FINI , NOUBLIEZ PAS DE MODIFIER LE TEMPS DE PARFCOURS 0A LA FIN
-    """
-def three_opt(mu) :
-    improve = True
-    while improve:
-        improve = False
-        for i in range(0,len(mu.Pplus)) :
-            for j in range(0,len(mu.Pplus)) :
-                for k in range(0,len(mu.Pplus)) :
-                    if (j != i-1 and j != i+1 and k != i-1 and k != i+1 and k != j-1 and k != j+1) :
-                        new_time = mu.Pplus[i].distance_to(mu.Pplus[j]) + mu.Pplus[i+1].distance_to(mu.Pplus[k]) + mu.Pplus[j+1].distance_to(mu.Pplus[k+1])
-                        if (mu.Pplus[i].distance_to(mu.Pplus[i+1]) + mu.Pplus[j].distance_to(mu.Pplus[j+1]) + mu.Pplus[k].distance_to(mu.Pplus[k+1]) > new_time) : 
-                            mu.Pplus[i+1:j+1] = mu.Pplus[j:i:-1]
-                            improve = True
+def two_opt(mu) :
+    improved = True
+    noeuds = mu.pplus
+    modified = False
+    
+    while improved :  
+        #current_iteration += 1
+        imin = -1
+        jmin = -1
+        deltamin = float('inf') 
+        for i in range(0, len(noeuds) - 3):
+            for j in range(i + 2, len(noeuds)-1):
+                x = noeuds[i]
+                v = noeuds[j]
+                u = noeuds[i+1]
+                y = noeuds[j+1]
+                
+                # si l'arc (v,y) est avant l'arc (x,u) dans la tournée et ils sont contigus
+                if (x.equal(y)):
+                    continue
+                
+                delta = x.distance_to(v) + u.distance_to(y) - x.distance_to(u) - v.distance_to(y)
+                if delta < deltamin :
+                    deltamin = delta
+                    imin = i
+                    jmin = j
         
+        deltamin = round(deltamin,2)
+        
+        if deltamin < 0 and imin != -1 and jmin != -1:
+            #print("imin = ", imin, " jmin = ", jmin, " delta = ", deltamin)  
+            new_nodes = noeuds[:imin+1] + noeuds[jmin:imin:-1] + noeuds[jmin+1:]
+            mu.pplus = new_nodes
+            #route.print_nodes()
+            #sleep(1)
+            noeuds = mu.pplus
+            modified = True
+            improved = True
+        else :
+            improved = False
+    
+    # mettre à jours le temps de parcours de mu si la liste des noeuds de mu a été modifié
+    if modified :
+        mu.calcul_temps()
+        
+    #return mu #A REVOIR SI C NECESSAIRE DE RETOURNER MU OU PAS []     
+
+"""
+    trier par ordre croissant de distance entre le sommet courant et les sommets fils,
+    si ils ont la meme distance on prend celle qui en a le plus de profit
+                      
+def trier_b_off(b_off) :
+    for mu in b_off :
+        
+"""
+                         
+def print_plot_beam(routes, points_df):
+    # Extraire les coordonnées x et y pour tous les points
+    x_points = points_df['x']
+    y_points = points_df['y']
+
+    # Tracer tous les points
+    plt.scatter(x_points, y_points, color='blue', label='Points')
+
+    # Générer une palette de couleurs
+    colors = plt.cm.viridis(np.linspace(0, 1, len(routes)))
+
+    # Pour chaque route, tracer la trajectoire avec une couleur unique
+    for mu, color in zip(routes, colors):
+        # Assurez-vous que route.nodes contient des objets avec des attributs x et y
+        x = [node.x for node in mu.pplus]
+        y = [node.y for node in mu.pplus]
+
+        # Tracer la trajectoire de la route
+        plt.plot(x, y, marker='o', linestyle='--', color=color)
+
+    # Marquer le point de départ et d'arrivée avec des marqueurs spécifiques
+    plt.scatter(points_df['x'].iloc[0], points_df['y'].iloc[0], color='red', marker='s', edgecolor='black', label='Départ', s=100)
+    plt.scatter(points_df['x'].iloc[-1], points_df['y'].iloc[-1], color='green', marker='s', edgecolor='black', label='Arrivée', s=100)
+
+    # Ajouter des titres et des étiquettes
+    plt.title("Affichage des Tournées")
+    plt.xlabel("Coordonnée X")
+    plt.ylabel("Coordonnée Y")
+    plt.legend()
+
+    # Afficher le graphique
+    plt.show()

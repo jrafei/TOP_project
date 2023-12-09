@@ -14,11 +14,11 @@ class NodeBeam:
             profit (float): Le profit associé au Node.
             t : temps de parcours des noeuds visités
         """
-        self.id = Node.next_id  # Attribuer l'ID actuel à l'instance.
-        Node.next_id += 1  # Incrémenter l'ID pour la prochaine instance.
+        self.id = NodeBeam.next_id  # Attribuer l'ID actuel à l'instance.
+        NodeBeam.next_id += 1  # Incrémenter l'ID pour la prochaine instance.
 
-        self.pplus = pp
-        self.pneg = pn
+        self.pplus = pp # liste des noeuds visités (avec le dépôt et l'arrivée)
+        self.pneg = pn # liste des noeuds non visités (sans le dépôt et l'arrivée)
         self.profit = profit
         self.time = t
         
@@ -36,32 +36,37 @@ class NodeBeam:
         return self.time
 
 
-    def distance_to(self, other):
-        """ PAS UTILISER
-        Calcule la distance euclidienne entre ce point et un autre point.
-
-        Parameters:
-            other (Point): L'autre point avec lequel calculer la distance.
-
-        Returns:
-            float: La distance euclidienne entre les deux points.
+        """_summary_
+        
         """
-        return (((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5).round(2)
+    def add_ending_point(self,end_point):
+        self.pplus.append(end_point)
+        self.profit += end_point.profit
+        self.time += end_point.distance_to(self.pplus[-1])
     
-    def addNode(self,node):
-        self.Pplus.append(node)
-        self.Pneg.remove(node)
-        self.profit += node.profit
-        self.time += node.distance_to(self.Pplus[-2]) + node.distance_to(self.Pplus[-1])
-        
-        
+    
+    def calcul_temps(self) :
+        t = 0
+        for i in range(0,len(self.pplus)-1) :
+            t += self.pplus[i].distance_to(self.pplus[i+1])
+        return t
+    
     def __str__(self):
         """
-        Retourne une représentation en chaîne de caractères du point.
+        Retourne une représentation en chaîne de caractères de la route.
         """
-        #return f"Point(x={self.x}, y={self.y}, profit={self.profit})"
-        return f"Point({self.id}, Point(x={self.x}, y={self.y})"
+        return f"Route(longueur={self.time}, profit={self.profit})"   
     
-    def equal(self,other):
-        return self.x == other.x and self.y == other.y and self.profit == other.profit
-
+    def print_nodebeam(self):
+        print("list noeud visités :")
+        for node in self.pplus :
+            print("     ",node)
+        
+        print("list noeud  non visités :")
+        for node in self.pneg :
+            print("     ",node)
+        
+        print("profit : ", self.profit)
+        print("time : ", self.time)
+        print("id : ", self.id)
+        
