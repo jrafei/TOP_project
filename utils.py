@@ -59,7 +59,7 @@ def sum_tournees_profit(routes):
 
 
 """_summary_
-    Applique l'heuristique opt-2 sur une tournée
+    Applique l'heuristique 2-opt sur une tournée
     @Parameters:
     tournee (Route) : tournée sur laquelle on applique l'heuristique opt-2
     choix de la permutation : la meilleur permutation qui ameliore la tournée
@@ -105,7 +105,9 @@ def opt_2(route):
             improved = True
         else :
             improved = False
-      
+    
+    route.calculer_longueur()
+    
     return route   
 
 
