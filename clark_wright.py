@@ -46,21 +46,21 @@ def init_marguerite(points,tmax) :
         @Returns:
         list[Tournee] : Retourne une liste de tournées.
         
-        @Complexité: O(n^2 * x)) avec x le nombre d'arc possible = n*(n-1)/2 donc Complexite = O(n^2)
+        @Complexité: O(n^2 * x)) avec x le nombre d'arc ayant un gain positif , pire cas : O(n^4)
     """
 def clarke_wright(points, tmax, m) :
-    tours,liste_noeuds = init_marguerite(points, tmax) # tours : list[Tournee]  , liste_noeuds : list[node] , complexité : O(n)
+    tours,liste_noeuds = init_marguerite(points, tmax) # complexité : O(n) , tours : list[Tournee]  , liste_noeuds : list[node] ,
     
     if (tours == []) :
         print("Aucune tournée a une distance plus petite ou égale au tmax !")
         return None
     
-    svl = SavingList(liste_noeuds) # type : liste trié par ordre croissant ( liste de tuple de type Point) , complexité : O(n^2)
+    svl = SavingList(liste_noeuds) #complexité : O(n^2)  type : liste trié par ordre decroissant ( liste de tuple de type Point) , 
     
     while svl != [] :
         
         # prendre le couple de points (arc) ayant le gain max
-        couple = svl.pop() #Complexité : O(1)
+        couple = svl.pop(0) #Complexité : O(1)
         
         # prendre la tournée ayant comme dernier client le premier point de l'arc
         iRoute = getEndingRoute(couple[0], tours) #Complexité : O(n)
@@ -135,7 +135,7 @@ def SavingList(liste_noeuds):
                 if gain1 > 0 :
                     saving_list[(client1,client2)] = gain1
                 
-    sorted_savings = [couple for couple, _ in sorted(saving_list.items(), key=lambda x: x[1])] # Complexité : O(n^2)
+    sorted_savings = [couple for couple, _ in sorted(saving_list.items(), key=lambda x: x[1], reverse=True)] # Complexité : O(n^2)
     return sorted_savings
 
 
@@ -154,13 +154,3 @@ def get_gain_temps(i,j,depart, arrivee):
 
 def get_gain_profit(i,j):
     return i.profit + j.profit
-
-
-    """_summary_
-    calcule la distance entre deux points
-    @Parameters:
-        i : Point : le premier point
-        j : Point : le deuxième point
-    @Returns:
-        float : la distance entre les deux points
-    """

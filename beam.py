@@ -92,7 +92,7 @@ def beam(clients,depart, arrive, tmax, m, beam_width) :
                         bestK = mlj #muetoile = mulj
                         
 
-            b_off = sorted(b_off, key=lambda node: (-node.time, node.profit), reverse=True) # trier les noeuds de b_off par ordre décroissant de profit            
+            b_off = sorted(b_off, key=lambda node: (-node.time, node.profit), reverse=True) # trier les noeuds de b_off par ordre décroissant de profit, si même profit, alors on choisit celui qui a le plus petit temps de parcours            
             b = b_off[:beam_width]
             b_off = []
         
