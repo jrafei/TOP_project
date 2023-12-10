@@ -43,9 +43,9 @@ class Node:
         """
         Retourne une représentation en chaîne de caractères du point.
         """
-        #return f"Point(x={self.x}, y={self.y}, profit={self.profit})"
+        
         return f"Point({self.id}, Point(x={self.x}, y={self.y})"
-        #return f"Point({self.id})"
+
     
     def equal(self,other):
         return self.x == other.x and self.y == other.y and self.profit == other.profit

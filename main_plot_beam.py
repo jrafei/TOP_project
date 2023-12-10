@@ -1,6 +1,10 @@
 import csv
 from beam import *
-import time
+
+"""
+    Ce fichier main permet de tester l'algorithme beam search sur les instances du problème de tournées de véhicules.
+    Il génère aussi, grace au bibliothèque matplotlib, le graphe pour visualiser les tournées trouvées.
+"""
 
       
 #x = 't'
@@ -24,19 +28,12 @@ def main() :
         mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], w)
         profit = 0
         for mu in mus:
-            #print("TEMPS : ", mu.time)
-            #for node in mu.pplus : 
-            #    print(node.__str__())
             profit += mu.profit
         
         if profit > best_profit :
             best_profit = profit
             best_mus = mus
             wmax = w
-    
-    
-    #print("DANS MAIN : ")
-    #print(mus)
     
     if best_mus == None :
         return None    
@@ -45,12 +42,6 @@ def main() :
 
     print("Profit total : ", best_profit)
     print("wmax : ", wmax)
-
-    """
-    for mu in mus:
-        print(mu.pplus)            
-        print(mu)
-    """
     print_plot_beam(mus,top["points"])
     
 main()

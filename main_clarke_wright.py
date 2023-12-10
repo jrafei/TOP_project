@@ -1,7 +1,13 @@
 import csv
 from utils import *
-from clark_wright_class import *
+from clark_wright import *
 import time
+
+
+"""
+    Ce fichier main permet de tester l'algorithme clarke and wright sur les instances du problème de tournées de véhicules.
+    Il génère un fchier csv contenant les résultats.
+"""
 
 
 # Nom du fichier CSV
@@ -11,9 +17,9 @@ nom_fichier_csv = 'output_all.csv'
 en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total', 'temps_execution']
 
 #list = ['a','b','c','d','e','f']
-set = ['Set_32_234/p1.','Set_21_234/p2.','Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
-chiffre = ['2','3','4']
-list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r']
+set = ['Set_32_234/p1.','Set_21_234/p2.']#,'Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
+chiffre = ['2','3']#,'4']
+list = ['a','b','c','d','e','f','g','h','i']#,'j','k','l','m','n','o','p','q','r']
 
 # Ouvrir un fichier CSV pour l'écriture
 with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
@@ -28,14 +34,6 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
                 if top == None :
                     print("fichier non trouvé")
                     continue
-            
-                """ #ECRIRE SUR UN FICHIER TXT
-                print("================================== TEST ",x ," ======================")
-                print("1.2."+x+".txt")
-                print_to_file(file, "Temps Max : ", top['tmax'])
-                print_to_file(file, "Nombre de Tournees : ", top['m'])
-                print_to_file(file, "Nombre de Clients : ", top['n'])
-                """
                 
                 # Collecter les données à écrire
                 start_time = time.time()
@@ -47,10 +45,9 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
                 
                 
                 donnees = [s+y+"."+x, top['tmax'], top['n'], top['m'], profit, round((end_time - start_time),4)]
-                #print_to_file(file,"Profit total : ", profit)
                 writer.writerow(donnees)
+                print("fin de ",s+y+"."+x)
+            
+            print("fin de ",s+y)
+
                 
-                #for route in routes:            
-                #    print(route)
-                
-                #print_plot(routes,top["points"])

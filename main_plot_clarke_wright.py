@@ -1,7 +1,12 @@
 import csv
 from utils import *
-from clark_wright_class import *
+from clark_wright import *
 
+
+"""
+    Ce fichier main permet de tester l'algorithme clarke and wright sur les instances du problème de tournées de véhicules.
+    Il génère aussi, grace au bibliothèque matplotlib, le graphe pour visualiser les tournées trouvées.
+"""
 
        
 #x = 't'
