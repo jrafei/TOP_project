@@ -11,15 +11,15 @@ import time
 
 
 # Nom du fichier CSV
-nom_fichier_csv = 'output_all.csv'
+nom_fichier_csv = 'output_all_clarke_and_wright.csv'
 
 # En-têtes des colonnes
 en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total', 'temps_execution']
 
 #list = ['a','b','c','d','e','f']
-set = ['Set_32_234/p1.','Set_21_234/p2.']#,'Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
+set = ['Set_32_234/p1.','Set_21_234/p2.','Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
 chiffre = ['2','3']#,'4']
-list = ['a','b','c','d','e','f','g','h','i']#,'j','k','l','m','n','o','p','q','r']
+list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r']
 
 # Ouvrir un fichier CSV pour l'écriture
 with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
