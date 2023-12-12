@@ -154,11 +154,7 @@ def two_opt(mu) :
 
 """
     trier par ordre croissant de distance entre le sommet courant et les sommets fils,
-    si ils ont la meme distance on prend celle qui en a le plus de profit
-                      
-def trier_b_off(b_off) :
-    for mu in b_off :
-        
+    si ils ont la meme distance on prend celle qui en a le plus de profit        
 """
                          
 def print_plot_beam(routes, points_df):

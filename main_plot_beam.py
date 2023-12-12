@@ -8,13 +8,13 @@ from beam import *
 
       
 #x = 't'
-x='k'
+x='i'
 def main() : 
     print("================================== TEST ",x ," ======================")
     
     
     #top = read_file("./data/Set_33_234/p3.4."+x+".txt")  
-    top = read_file("./data/Set_21_234/p2.3."+x+".txt")   
+    top = read_file("./data/Set_66_234/p5.4."+x+".txt")   
     print("Temps Max : ", top['tmax'])
     print( "Nombre de Tournees : ", top['m'])
     print( "Nombre de Clients : ", top['n'])    
@@ -37,8 +37,6 @@ def main() :
     
     if best_mus == None :
         return None    
-    for mu in best_mus:
-        print(mu.time)
 
     print("Profit total : ", best_profit)
     print("wmax : ", wmax)
