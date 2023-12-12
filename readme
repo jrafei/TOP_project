@@ -1,3 +1,7 @@
 Bibliothèques nécessaires pour l'éxecution du programme : 
-    pip install pandas
-    pip install matplotlib
+    - pip install pandas
+    - pip install matplotlib
+
+Fichier main : 
+    - main_plot_clarke_wright.py et main_plot_beam.py permettent d'afficher les tournées trouvés dans un graphe grace à matplotlib
+    - main_clarke_wright.py et main_beam.py créent un fichier csv contenant les résultats trouvés pour chacune des deux méthodes.
