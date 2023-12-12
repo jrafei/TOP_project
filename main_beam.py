@@ -6,15 +6,12 @@ import time
 """
     Ce fichier main permet de tester l'algorithme beam sur les instances du problème de tournées de véhicules.
     Il génère un fchier csv contenant les résultats.
-    Dans le fichier .csv : 
-        temps_execution : temps d'exécution de l'algorithme avec un beam_width = wmax
 """
 
 # Nom du fichier CSV
-nom_fichier_csv = 'output_beam_p1.csv'
+nom_fichier_csv = 'output_beam_p11.csv'
 
 # En-têtes des colonnes
-
 en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total', 'temps_execution','wmax']
 
 set = ['Set_32_234/p1.']#,'Set_21_234/p2.','Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
@@ -40,11 +37,11 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
                 best_profit = 0
                 wmax = 0
                 liste_clients, pt_depart, pt_arrivee = getNode_respect_time(top['points'],top['tmax'])
-                best_time = 0
+                
+                start_time = time.time()
+                # pour chaque valeur de w on lance l'algorithme beam, on garde la meilleure solution
                 for w in range (1,10) : 
-                    start_time = time.time()
-                    mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], w)
-                    end_time = time.time()            
+                    mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], w)            
                     profit = 0
                     for mu in mus:
                         profit += mu.profit
@@ -53,9 +50,9 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
                         best_profit = profit
                         best_mus = mus
                         wmax = w
-                        best_time = round((end_time - start_time),4)
     
-                donnees = ['p1.'+y+"."+x, top['tmax'], top['n'], top['m'], profit, best_time ,wmax]
+                end_time = time.time()
+                donnees = ['p1.'+y+"."+x, top['tmax'], top['n'], top['m'], profit, round((end_time - start_time),4),wmax]
                 writer.writerow(donnees)
                 print("fin de ",s+y+"."+x)
             
