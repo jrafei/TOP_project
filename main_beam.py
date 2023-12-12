@@ -9,14 +9,14 @@ import time
 """
 
 # Nom du fichier CSV
-nom_fichier_csv = 'output_beam_p11.csv'
+nom_fichier_csv = 'output_beam_p5.csv'
 
 # En-têtes des colonnes
-en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total', 'temps_execution','wmax']
+en_tetes = ['instance', 'tmps_max', 'nombre_clients', 'nombre_tournees', 'profit_total', 'temps_execution']
 
-set = ['Set_32_234/p1.']#,'Set_21_234/p2.','Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
-chiffre = ['2','3']#,'4']
-list = ['a','b','c','d','e','f','g','h']#,'i','j','k','l','m','n','o','p','q','r']
+set = ['Set_66_234/p5.']#'Set_32_234/p1.'],'Set_21_234/p2.','Set_33_234/p3.', "Set_100_234/p4.",'Set_66_234/p5.','Set_64_234/p6.',"Set_102_234.p7."]
+chiffre = ['2','3','4']
+list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r']
 
 # Ouvrir un fichier CSV pour l'écriture
 with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
@@ -35,24 +35,17 @@ with open(nom_fichier_csv, mode='w', newline='') as fichier_csv:
                 # Collecter les données à écrire
                 best_mus = None
                 best_profit = 0
-                wmax = 0
                 liste_clients, pt_depart, pt_arrivee = getNode_respect_time(top['points'],top['tmax'])
                 
                 start_time = time.time()
-                # pour chaque valeur de w on lance l'algorithme beam, on garde la meilleure solution
-                for w in range (1,10) : 
-                    mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], w)            
-                    profit = 0
-                    for mu in mus:
-                        profit += mu.profit
-                    
-                    if profit > best_profit :
-                        best_profit = profit
-                        best_mus = mus
-                        wmax = w
-    
+                 
+                mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], 10) 
                 end_time = time.time()
-                donnees = ['p1.'+y+"."+x, top['tmax'], top['n'], top['m'], profit, round((end_time - start_time),4),wmax]
+                profit = 0
+                for mu in mus:
+                    profit += mu.profit
+                    
+                donnees = ['p1.'+y+"."+x, top['tmax'], top['n'], top['m'], profit, round((end_time - start_time),4)]
                 writer.writerow(donnees)
                 print("fin de ",s+y+"."+x)
             
