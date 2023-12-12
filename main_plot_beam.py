@@ -20,26 +20,16 @@ def main() :
     print( "Nombre de Clients : ", top['n'])    
     
     # Collecter les données à écrire
-    best_mus = None
     best_profit = 0
     wmax = 0
-    for w in range (1,10) : 
-        liste_clients, pt_depart, pt_arrivee = getNode_respect_time(top['points'],top['tmax'])
-        mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], w)
-        profit = 0
-        for mu in mus:
-            profit += mu.profit
-        
-        if profit > best_profit :
-            best_profit = profit
-            best_mus = mus
-            wmax = w
-    
-    if best_mus == None :
-        return None    
+    #for w in range (1,10) : 
+    liste_clients, pt_depart, pt_arrivee = getNode_respect_time(top['points'],top['tmax'])
+    mus = beam(liste_clients,pt_depart,pt_arrivee, top['tmax'], top['m'], 10)
+    profit = 0
+    for mu in mus:
+        profit += mu.profit
 
     print("Profit total : ", best_profit)
-    print("wmax : ", wmax)
     print_plot_beam(mus,top["points"])
     
 main()
